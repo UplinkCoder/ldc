@@ -11,7 +11,7 @@
 // The idea is to minimize #ifdef's in the app code.
 
 #if IN_LLVM
-#include <cstdlib>
+#include "stdlib.h"
 #else
 #include <stdlib.h> // for alloca
 #endif

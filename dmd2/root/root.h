@@ -18,7 +18,7 @@
 #include "rmem.h"
 
 #if IN_LLVM
-#include <iterator>
+#include "iterator"
 #endif
 
 #if __DMC__

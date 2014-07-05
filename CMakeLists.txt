@@ -343,13 +343,13 @@ endif()
 # There is no realiable way to delegate the work to the compiler.
 # E.g. gcc up to version 4.6 defines __LITTLE_ENDIAN, but not 4.7
 #
-include(TestBigEndian)
-test_big_endian(BIGENDIAN)
-if(${BIGENDIAN})
-    add_definitions(-D__BIG_ENDIAN__)
-else()
+#include(TestBigEndian)
+#test_big_endian(BIGENDIAN)
+#if(${BIGENDIAN})
+#    add_definitions(-D__BIG_ENDIAN__)
+#else()
     add_definitions(-D__LITTLE_ENDIAN__)
-endif()
+#endif()
 
 #
 # Check if libpthread is available.
@@ -359,7 +359,7 @@ if( NOT WIN32 OR CYGWIN )
     check_include_file(pthread.h HAVE_PTHREAD_H)
     check_library_exists(pthread pthread_create "" HAVE_LIBPTHREAD)
     if(HAVE_LIBPTHREAD)
-        set(PTHREAD_LIBS -lpthread)
+       set(PTHREAD_LIBS -lpthread)
     endif()
 endif()
 
@@ -501,7 +501,7 @@ target_link_libraries(${LDMD_EXE} ${LLVM_LIBRARIES} ${PTHREAD_LIBS} ${TERMINFO_L
 enable_testing()
 add_subdirectory(runtime)
 if(D_VERSION EQUAL 2)
-    add_subdirectory(tests/d2)
+#    add_subdirectory(tests/d2)
 endif()
 
 #

@@ -626,6 +626,11 @@ static void registerPredefinedTargetVersions() {
             VersionCondition::addPredefinedGlobalIdent("D_HardFloat");
             break;
 #endif
+#if defined(__asmjs__)
+        case llvm::Triple::asmjs:
+	     VersionCondition::addPredefinedGlobalIdent("ASMJS");
+             break;
+#endif
         default:
             error("invalid cpu architecture specified: %s", global.params.targetTriple.getArchName().str().c_str());
             fatal();
@@ -718,6 +723,13 @@ static void registerPredefinedTargetVersions() {
             VersionCondition::addPredefinedGlobalIdent("AIX");
             VersionCondition::addPredefinedGlobalIdent("Posix");
             break;
+#endif
+#if defined(__asmjs__)
+        case llvm::Triple::Emscripten:
+             VersionCondition::addPredefinedGlobalIdent("Emscripten");
+             VersionCondition::addPredefinedGlobalIdent("linux");
+             VersionCondition::addPredefinedGlobalIdent("Posix");
+             break;
 #endif
         default:
             switch (global.params.targetTriple.getEnvironment())
