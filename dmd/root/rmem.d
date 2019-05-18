@@ -64,6 +64,8 @@ version (GC)
 }
 else
 {
+    __gshared ulong allocated = 0;
+
     import core.stdc.stdlib;
     import core.stdc.stdio;
 
@@ -148,6 +150,7 @@ else
 
     extern (C) void* allocmemory(size_t m_size) nothrow
     {
+        allocated += m_size;
         // 16 byte alignment is better (and sometimes needed) for doubles
         m_size = (m_size + 15) & ~15;
 

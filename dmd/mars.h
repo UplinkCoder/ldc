@@ -99,5 +99,5 @@ void ensurePathToNameExists(Loc loc, const char *name);
 void escapePath(OutBuffer *buf, const char *fname);
 
 #if IN_LLVM
-int mars_mainBody(Strings &files, Strings &libmodules);
+int mars_mainBody(Strings &files, Strings &libmodules, Strings &arguments);
 #endif

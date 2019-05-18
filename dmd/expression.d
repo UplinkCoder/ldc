@@ -67,6 +67,8 @@ import dmd.utf;
 import dmd.visitor;
 version (IN_LLVM) import gen.dpragma;
 
+import dmd.trace;
+
 enum LOGSEMANTIC = false;
 void emplaceExp(T : Expression, Args...)(void* p, Args args)
 {

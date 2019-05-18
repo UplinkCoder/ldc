@@ -157,6 +157,8 @@ struct CompiledCtfeFunctionPimpl
 
 private:
 
+import dmd.trace;
+
 enum CtfeGoal : int
 {
     ctfeNeedRvalue,     // Must return an Rvalue (== CTFE value)
@@ -713,6 +715,7 @@ public:
  */
 private void ctfeCompile(FuncDeclaration fd)
 {
+    mixin(traceString("fd"));
     debug (LOGCOMPILE)
     {
         printf("\n%s FuncDeclaration::ctfeCompile %s\n", fd.loc.toChars(), fd.toChars());
@@ -750,6 +753,7 @@ private void ctfeCompile(FuncDeclaration fd)
  */
 private Expression interpretFunction(FuncDeclaration fd, InterState* istate, Expressions* arguments, Expression thisarg)
 {
+    mixin(traceString("fd"));
     debug (LOG)
     {
         printf("\n********\n%s FuncDeclaration::interpret(istate = %p) %s\n", fd.loc.toChars(), istate, fd.toChars());
