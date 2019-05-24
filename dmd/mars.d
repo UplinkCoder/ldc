@@ -66,8 +66,8 @@ void writeTrace(ref Strings arguments)
     static if (SYMBOL_TRACE)
     {
         // this is debug code we simply hope that we will not need more
-        // then 32 Megabyte of log-buffer;
-        char* fileBuffer = cast(char*)malloc(ushort.max * 512 * 64);
+        // then 2G of log-buffer;
+        char* fileBuffer = cast(char*)malloc(int.max);
         char* bufferPos = fileBuffer;
 
         char[255] fileNameBuffer;
@@ -97,10 +97,12 @@ void writeTrace(ref Strings arguments)
             }
         }
 
-        sprintf(&fileNameBuffer[0],
-             "symbol-%s.log".ptr, timeString);
+        sprintf(&fileNameBuffer[0], "symbol-%s.log.1".ptr, timeString);
+
+        printf("traced_symbols: %d\n", dsymbol_profile_array_count);
 
         auto f = File(&fileNameBuffer[0]);
+        f._ref = 1;
 
         bufferPos += sprintf(cast(char*) bufferPos, "//");
         foreach(arg;arguments)
@@ -117,7 +119,7 @@ void writeTrace(ref Strings arguments)
             "begin_mem".ptr, "end_mem".ptr
         );
 
-        foreach(dp;dsymbol_profile_array[0 .. dsymbol_profile_array_count])
+        foreach(dp;dsymbol_profile_array[0 .. dsymbol_profile_array_count / 2])
         {
 
             Loc loc;
@@ -146,9 +148,50 @@ void writeTrace(ref Strings arguments)
                 dp.begin_mem, dp.end_mem);
         }
 
+        printf("trace_file_size: %dk\n ", (bufferPos - fileBuffer) / 1024);
         f.setbuffer(fileBuffer, bufferPos - fileBuffer);
-        f._ref = 1;
-        f.write();
+        auto errorcode_write = f.write();
+
+        sprintf(&fileNameBuffer[0], "symbol-%s.log.2".ptr, timeString);
+
+        auto f2 = File(&fileNameBuffer[0]);
+        f2._ref = 1;
+        bufferPos = fileBuffer;
+
+        foreach(dp;dsymbol_profile_array[dsymbol_profile_array_count / 2
+            .. dsymbol_profile_array_count])
+        {
+
+            Loc loc;
+            const (char)* name;
+
+            if (dp.sym !is null)
+            {
+                loc = dp.sym.loc;
+                name = dp.sym.toChars();
+            }
+            else if (dp.exp !is null)
+            {
+                loc = dp.exp.loc;
+                name = dp.exp.toChars();
+            }
+            else
+                continue; // we probably should assert here, but whaverever.
+
+            // Identifier id = dp.sym.ident ? dp.sym.ident : dp.sym.getIdent();
+
+            bufferPos += sprintf(cast(char*) bufferPos,
+                "%lld|%s|%s|%s|%s|%lld|%lld|%lld|%lld|\n",
+                dp.end_ticks - dp.begin_ticks,
+                name, &dp.kind[0], &dp.fn[0],
+                loc.toChars(), dp.begin_ticks, dp.end_ticks,
+                dp.begin_mem, dp.end_mem);
+        }
+
+        f2.setbuffer(fileBuffer, bufferPos - fileBuffer);
+        errorcode_write = f2.write();
+
+
         free(fileBuffer);
     }
 }
